@@ -10,7 +10,7 @@ module coin_objects::coin {
     // no coin resource exists
     const ENO_COINS:u64 = 1;
 
-    const SELLER:address = @0x3979b0dd213c8ffb3df3fc7eba2ac3852f295e27a9da333c915d0138a69de787;
+    const SELLER:address = @0x12625d8fdd2ac0ef6264aedf352bd2ab0c5b47b3b1a84a1da3527f2b2bd8dbbf;
 
     struct MirnyCoin {}
 
@@ -23,8 +23,12 @@ module coin_objects::coin {
             0
         ); 
         std::debug::print(&string::utf8(b"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
-        std::debug::print(&string::utf8(b"Seller Coins Object ID: "));
-        std::debug::print(&seller_coins_object_id);
+        std::debug::print(&string::utf8(b"[Seller Coins Object Address]"));
+        std::debug::print(&object::object_id_address(&seller_coins_object_id));
+        let seller_coins_obj = borrow_global<Coins<MirnyCoin>>(object::object_id_address(&seller_coins_object_id));
+        std::debug::print(&string::utf8(b"!!Seller Coins Object Balance!!"));
+        std::debug::print(&seller_coins_obj.balance);
+        std::debug::print(&string::utf8(b" "));
 
         let buyer_coins_object_id = mint<MirnyCoin>(
             account,
@@ -33,8 +37,12 @@ module coin_objects::coin {
             400
         );
         std::debug::print(&string::utf8(b"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
-        std::debug::print(&string::utf8(b"Buyer Coins Object ID: "));
-        std::debug::print(&buyer_coins_object_id);
+        std::debug::print(&string::utf8(b"[Buyer Coins Object Address]"));
+        std::debug::print(&object::object_id_address(&buyer_coins_object_id));
+        let buyer_coins_obj = borrow_global<Coins<MirnyCoin>>(object::object_id_address(&buyer_coins_object_id));
+        std::debug::print(&string::utf8(b"!!Buyer Coins Object Balance!!"));
+        std::debug::print(&buyer_coins_obj.balance);
+        std::debug::print(&string::utf8(b" "));
         
 
         let coin_object = withdraw<MirnyCoin>(account, 100, buyer_coins_object_id);
@@ -125,8 +133,11 @@ module coin_objects::coin {
         let coin_object_id = object::address_to_object_id(signer::address_of(&coin_object_signer));
         let coin_obj = move_from<Coin<T>>(object::object_id_address(&coin_object_id));
         std::debug::print(&string::utf8(b"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
-        std::debug::print(&string::utf8(b"Coin Object ID: "));
-        std::debug::print(&coin_object_id);
+        std::debug::print(&string::utf8(b"Coin Object Created!!! The value amount is "));
+        std::debug::print(&coin_obj.value);
+        std::debug::print(&string::utf8(b"[Coin Object Address]"));
+        std::debug::print(&object::object_id_address(&coin_object_id));
+        std::debug::print(&string::utf8(b" "));
         coin_obj
     }
     
