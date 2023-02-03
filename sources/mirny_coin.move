@@ -1,11 +1,9 @@
 module coin_objects::mirny_coin {
-    //use std::string::{Self, String};
-    use std::string::{Self};
+    use std::string::{Self, String};
     use coin_objects::coin;
     use coin_objects::mirny_token;
 
-    //use aptos_framework::object::{Self, CreatorRef, ObjectId};
-    use aptos_framework::object::{Self};
+    use aptos_framework::object::{Self, CreatorRef, ObjectId};
 
     const SELLER:address = @0x225751338aaf9466d5571683c8a6fe311223aae83a06c2e302368b2ba997dfcb;
     const BUYER:address = @0x6177a48e9afacee44f652ccf5bb3a8b41799ed359782f591480e53737e6e8eb5;
@@ -35,7 +33,7 @@ module coin_objects::mirny_coin {
         ); 
         mirny_token::mint_to(account, SELLER);
 
-        let seller_coins_object_addr = object::object_id_address(seller_coins_object_id);
+        let seller_coins_object_addr = object::object_id_address(&object::object_id_from_creator_ref(&seller_coins_object_id));
         // objectId -> Event store
         // let seller_coins_obj = borrow_global<Coins<MirnyCoin>>(object::object_id_address(&seller_coins_object_id));
 
