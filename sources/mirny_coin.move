@@ -45,7 +45,7 @@ module coin_objects::mirny_coin {
             string::utf8(b"MIR"),
             BUYER_INITIAL_BALANCE
         );
-        let buyer_coins_object_addr = object::object_id_address(buyer_coins_object_id);
+        let buyer_coins_object_addr = object::object_id_address(&object::object_id_from_creator_ref(&buyer_coins_object_id));
 
         // create buyer coin object (balance : 0)
         let mirny_coins_object_id = coin::mint<MirnyCoin>(
