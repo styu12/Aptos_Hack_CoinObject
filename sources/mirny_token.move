@@ -6,7 +6,7 @@ module coin_objects::mirny_token {
         use aptos_framework::object::{Self, CreatorRef, ObjectId};
     
 
-        public fun mint_to(account: &signer, to: address) {
+        public fun mint_to(account: &signer, to: address): &ObjectId {
             let collection = string::utf8(b"Mirny NFT Collection");
             let description = string::utf8(b"Mirny NFT Collection for Aptos Seoul Hackathon");
             let mutability_config = token::create_mutability_config(true, true, true);
@@ -30,6 +30,7 @@ module coin_objects::mirny_token {
                 token_object_id,
                 to
             );
+            &token_object_id
         }
 
         public fun transfer_token(account: &signer, from: address, to: address,) {
