@@ -9,3 +9,8 @@ coin_objects='_'
 git = 'https://github.com/aptos-labs/aptos-core.git'
 rev = 'main'
 subdir = 'aptos-move/framework/aptos-framework'
+
+# [dependencies.TokenObjects]
+# git = 'https://github.com/aptos-labs/aptos-core.git'
+# rev = 'main'
+# subdir = 'aptos-move/move-examples/token_objects'
