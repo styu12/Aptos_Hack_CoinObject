@@ -14,8 +14,8 @@ Ex.
 set `SELLER` variable to `@{seller_address}`
 
 ## Compile and Publish the coin module 
-`aptos move compile --named-addresses coin_objects=default`
-`aptos move publish --named-addresses coin_objects=default`
+`aptos move compile --named-addresses coin_objects=default --bytecode-version 6`
+`aptos move publish --named-addresses coin_objects=default --bytecode-version 6`
 
 ## Run Transfer Method
 `aptos move run --function-id 'default::coin::test_transfer'`

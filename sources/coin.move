@@ -10,7 +10,7 @@ module coin_objects::coin {
     // no coin resource exists
     const ENO_COINS:u64 = 1;
 
-    const SELLER:address = @0x12625d8fdd2ac0ef6264aedf352bd2ab0c5b47b3b1a84a1da3527f2b2bd8dbbf;
+    const SELLER:address = @0x93b2948a9e627378688f56f3b922e6f70874e7a7687fdad14407e8c137185cf9;
 
     struct MirnyCoin {}
 
