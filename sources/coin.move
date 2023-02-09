@@ -91,7 +91,7 @@ module coin_objects::coin {
         name: String,
         symbol: String,
         amount: u64
-    ): ObjectId {
+    ): CreatorRef {
            // make Coins<T> Object
             let coins_seed = create_coins_id_seed(&to, &name, &symbol);
             let coins_creator_ref = object::create_named_object(creator, coins_seed);
@@ -108,18 +108,18 @@ module coin_objects::coin {
             object::transfer(
                 creator,
                 coins_object_id,
-                @0x08faf857756cb0ec0d17cdd6990d3d23930a0e30c03ddaa2b39dbcc932f5656e
+                to
             );
-            coins_object_id
+            coins_creator_ref
     }
 
     public fun withdraw<T>(
         account: &signer, 
         amount: u64,
-        coins: ObjectId
+        coins: address
     ): Coin<T> acquires Coins, Coin {
-        assert!(exists<Coins<T>>(object::object_id_address(&coins)), ENO_COINS);
-        let coins_obj = borrow_global_mut<Coins<T>>(object::object_id_address(&coins));
+        assert!(exists<Coins<T>>(coins), ENO_COINS);
+        let coins_obj = borrow_global_mut<Coins<T>>(coins);
         coins_obj.balance = coins_obj.balance - amount;
 
         let coin_creator_ref = initialize_coin<T>(
@@ -143,11 +143,11 @@ module coin_objects::coin {
     
 
     public fun deposit<T>(
-        to: ObjectId, 
+        to: address, 
         coin_to_deposit: Coin<T>
     )  acquires Coins {
-        assert!(exists<Coins<T>>(object::object_id_address(&to)), ENO_COINS);
-        let dst_coins_object = borrow_global_mut<Coins<T>>(object::object_id_address(&to));
+        assert!(exists<Coins<T>>(to), ENO_COINS);
+        let dst_coins_object = borrow_global_mut<Coins<T>>(to);
         dst_coins_object.balance = dst_coins_object.balance + coin_to_deposit.value;
     }
 
@@ -159,7 +159,8 @@ module coin_objects::coin {
     ): CreatorRef {
         // make coin object
         let coin_seed = create_coin_id_seed(&name, &symbol);
-        let coin_creator_ref = object::create_named_object(creator, coin_seed);
+        let coin_creator_ref = object::create_object_from_account(creator);
+        // let coin_creator_ref = object::create_named_object(creator, coin_seed);
         let coin_object_signer = object::generate_signer(&coin_creator_ref);
 
         let coin = Coin<T> {

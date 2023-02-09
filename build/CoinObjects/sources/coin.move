@@ -10,45 +10,6 @@ module coin_objects::coin {
     // no coin resource exists
     const ENO_COINS:u64 = 1;
 
-    const SELLER:address = @0x12625d8fdd2ac0ef6264aedf352bd2ab0c5b47b3b1a84a1da3527f2b2bd8dbbf;
-
-    struct MirnyCoin {}
-
-    public entry fun test_transfer(account: &signer) acquires Coins, Coin {
-        let seller_coins_object_id = mint_to<MirnyCoin>(
-            account,
-            SELLER,
-            string::utf8(b"Mirny Coin"),
-            string::utf8(b"MIR"),
-            0
-        ); 
-        std::debug::print(&string::utf8(b"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
-        std::debug::print(&string::utf8(b"[Seller Coins Object Address]"));
-        std::debug::print(&object::object_id_address(&seller_coins_object_id));
-        let seller_coins_obj = borrow_global<Coins<MirnyCoin>>(object::object_id_address(&seller_coins_object_id));
-        std::debug::print(&string::utf8(b"!!Seller Coins Object Balance!!"));
-        std::debug::print(&seller_coins_obj.balance);
-        std::debug::print(&string::utf8(b" "));
-
-        let buyer_coins_object_id = mint<MirnyCoin>(
-            account,
-            string::utf8(b"Mirny Coin"),
-            string::utf8(b"MIR"),
-            400
-        );
-        std::debug::print(&string::utf8(b"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
-        std::debug::print(&string::utf8(b"[Buyer Coins Object Address]"));
-        std::debug::print(&object::object_id_address(&buyer_coins_object_id));
-        let buyer_coins_obj = borrow_global<Coins<MirnyCoin>>(object::object_id_address(&buyer_coins_object_id));
-        std::debug::print(&string::utf8(b"!!Buyer Coins Object Balance!!"));
-        std::debug::print(&buyer_coins_obj.balance);
-        std::debug::print(&string::utf8(b" "));
-        
-
-        let coin_object = withdraw<MirnyCoin>(account, 100, buyer_coins_object_id);
-        deposit(seller_coins_object_id, coin_object);
-    }
-
     #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
     struct Coins<phantom T> has key, store {
         name: String,
@@ -108,7 +69,7 @@ module coin_objects::coin {
             object::transfer(
                 creator,
                 coins_object_id,
-                @0x08faf857756cb0ec0d17cdd6990d3d23930a0e30c03ddaa2b39dbcc932f5656e
+                to
             );
             coins_object_id
     }
@@ -116,10 +77,10 @@ module coin_objects::coin {
     public fun withdraw<T>(
         account: &signer, 
         amount: u64,
-        coins: ObjectId
+        coins: address
     ): Coin<T> acquires Coins, Coin {
-        assert!(exists<Coins<T>>(object::object_id_address(&coins)), ENO_COINS);
-        let coins_obj = borrow_global_mut<Coins<T>>(object::object_id_address(&coins));
+        assert!(exists<Coins<T>>(coins), ENO_COINS);
+        let coins_obj = borrow_global_mut<Coins<T>>(coins);
         coins_obj.balance = coins_obj.balance - amount;
 
         let coin_creator_ref = initialize_coin<T>(
@@ -143,11 +104,11 @@ module coin_objects::coin {
     
 
     public fun deposit<T>(
-        to: ObjectId, 
+        to: address, 
         coin_to_deposit: Coin<T>
     )  acquires Coins {
-        assert!(exists<Coins<T>>(object::object_id_address(&to)), ENO_COINS);
-        let dst_coins_object = borrow_global_mut<Coins<T>>(object::object_id_address(&to));
+        assert!(exists<Coins<T>>(to), ENO_COINS);
+        let dst_coins_object = borrow_global_mut<Coins<T>>(to);
         dst_coins_object.balance = dst_coins_object.balance + coin_to_deposit.value;
     }
 
@@ -159,7 +120,8 @@ module coin_objects::coin {
     ): CreatorRef {
         // make coin object
         let coin_seed = create_coin_id_seed(&name, &symbol);
-        let coin_creator_ref = object::create_named_object(creator, coin_seed);
+        let coin_creator_ref = object::create_object_from_account(creator);
+        // let coin_creator_ref = object::create_named_object(creator, coin_seed);
         let coin_object_signer = object::generate_signer(&coin_creator_ref);
 
         let coin = Coin<T> {
